@@ -24,21 +24,39 @@
 // ***************************************************************************
 class GLEnvironment
 {
+  typedef std::pair<float,float> Vec2F;
 public:
   // ************************************************* GLEnvironment::creation
   GLEnvironment( Environment& env) :
     _model(env)
   {
     // VBO pour les lignes de l'hexagone
-    GLfloat hex_vtx[(6+1)*2];
-    hex_vtx[0] = (float) 1.f;
-    hex_vtx[1] = (float) 0.f;
-    for( unsigned int side = 1; side < 7; ++side) {
-      float angle = (float) side * M_PI /3.0;
-      hex_vtx[side*2] = (float) cosf(angle);
-      hex_vtx[side*2+1] = (float) sinf(angle);
-    }
-    _vbo_hex_size = 1*(6+1); // numHex * (6+1) pts
+    // Essaie de faire 3 hexagone (0,0), (2,0) et (2,1)
+    GLfloat hex_vtx[(6*4)*5];
+    _vbo_hex_size = 0;
+    Vec2F center = coord_from_center( {0,0} );
+    float xc = center.first;
+    float yc = center.second;
+    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    center = coord_from_center( {2,0} );
+    xc = center.first;
+    yc = center.second;
+    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    center = coord_from_center( {2,1} );
+    xc = center.first;
+    yc = center.second;
+    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    center = coord_from_center( {-1,0} );
+    xc = center.first;
+    yc = center.second;
+    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    center = coord_from_center( {-2,-2} );
+    xc = center.first;
+    yc = center.second;
+    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    
+    _vbo_hex_size = _vbo_hex_size/2;
+    
     // VBO
     glGenBuffers(1, &_vbo_hexes);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo_hexes);
@@ -127,7 +145,7 @@ public:
       0                  // offset of first element
 			  );
     /* Push each element in buffer_vertices to the vertex shader */
-    glDrawArrays(GL_LINE_STRIP, 0, _vbo_hex_size);
+    glDrawArrays(GL_LINES, 0, _vbo_hex_size);
   };
 
   // ************************************************ GLEnvironment::attributs
@@ -143,6 +161,31 @@ private:
   /** Vertex Buffer Object pour lines */
   GLuint _vbo_hexes;
   unsigned int _vbo_hex_size;
+
+  // ************************************************** GLEnvironment::convert
+  Vec2F coord_from_center( const Vec2& pos ) const
+  {
+    // Déplacement du centre en fonction de x
+    float x = (float) pos.x * (1.f+cosf(M_PI/3.f));
+    float y = (float) pos.x * (sinf(M_PI/3.f));
+    // Puis on ajoute y
+    y += (float) pos.y * (2.f * sinf(M_PI/3.f));
+
+    return Vec2F(x,y);
+  };
+  unsigned int add_hex( GLfloat xc, GLfloat yc, GLfloat* ptr )
+  {
+    for( unsigned int side = 0; side < 6; ++side) {
+      float angle = (float) side * M_PI /3.0;
+      *ptr++ = xc + (float) cosf(angle);
+      *ptr++ = yc + (float) sinf(angle);
+      angle += M_PI /3.0;
+      *ptr++ = xc + (float) cosf(angle);
+      *ptr++ = yc + (float) sinf(angle);
+    }
+
+    return 6*4;
+  }
 };
 
 

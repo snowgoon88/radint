@@ -73,7 +73,19 @@ public:
     for( auto& item: _l_cell) {
       std::cout << str_vec(item.first) << " : " << item.second->str_dump() << std::endl;
     }
-  };
+  }; 
+  // ******************************************************** Environment::str
+  std::string str_dump()
+  {
+    std::stringstream dump;
+  
+    dump << "__ENV__ ";
+    for( auto& item: _l_cell) {
+      dump << str_vec(item.first) << " : " << item.second->str_dump() << std::endl;
+    } 
+    
+    return dump.str();
+  }
 
   // ************************************************** Environment::attributs
 private:

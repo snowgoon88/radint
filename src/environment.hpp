@@ -88,6 +88,7 @@ public:
   }
 
   // ************************************************** Environment::attributs
+  CCellPtr l_cell() const { return _l_cell; };
 private:
   CCellPtr _l_cell;
 };

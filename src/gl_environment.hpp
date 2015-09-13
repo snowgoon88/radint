@@ -32,28 +32,35 @@ public:
   {
     // VBO pour les lignes de l'hexagone
     // Essaie de faire 3 hexagone (0,0), (2,0) et (2,1)
-    GLfloat hex_vtx[(6*4)*5];
+    // GLfloat hex_vtx[(6*4)*5];
+    GLfloat hex_vtx[(6*4)* _model.l_cell().size() ];
+    Vec2F center;
     _vbo_hex_size = 0;
-    Vec2F center = coord_from_center( {0,0} );
-    float xc = center.first;
-    float yc = center.second;
-    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
-    center = coord_from_center( {2,0} );
-    xc = center.first;
-    yc = center.second;
-    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
-    center = coord_from_center( {2,1} );
-    xc = center.first;
-    yc = center.second;
-    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
-    center = coord_from_center( {-1,0} );
-    xc = center.first;
-    yc = center.second;
-    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
-    center = coord_from_center( {-2,-2} );
-    xc = center.first;
-    yc = center.second;
-    _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    for( auto& item: _model.l_cell()) {
+      center = coord_from_center( item.second->pos() );
+      _vbo_hex_size += add_hex( center.first, center.second,
+				&(hex_vtx[_vbo_hex_size]) );
+    }
+    // Vec2F center = coord_from_center( {0,0} );
+    // float xc = center.first;
+    // float yc = center.second;
+    // _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    // center = coord_from_center( {2,0} );
+    // xc = center.first;
+    // yc = center.second;
+    // _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    // center = coord_from_center( {2,1} );
+    // xc = center.first;
+    // yc = center.second;
+    // _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    // center = coord_from_center( {-1,0} );
+    // xc = center.first;
+    // yc = center.second;
+    // _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
+    // center = coord_from_center( {-2,-2} );
+    // xc = center.first;
+    // yc = center.second;
+    // _vbo_hex_size += add_hex( xc, yc, &(hex_vtx[_vbo_hex_size]) );
     
     _vbo_hex_size = _vbo_hex_size/2;
     

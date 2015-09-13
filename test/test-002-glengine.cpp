@@ -20,7 +20,7 @@ int main( int argc, char *argv[] )
   GLEngine app( "Simulateur", 800, 800);
 
   std::cout << "__ENVIRONMENT" << std::endl;
-  Environment env(2);
+  Environment env(3);
 
   std::cout << "__SIMULATOR" << std::endl;
   GLSimu simu_screen( app, env);

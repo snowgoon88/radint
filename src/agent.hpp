@@ -20,7 +20,16 @@ public:
   Agent( const Vec2& pos = {0,0}, const Direction& dir = _dir_no ) : 
     _pos(pos), _dir(dir)
   {};
-
+  // ************************************************************** Agent::str
+  std::string str_dump() 
+  {
+    std::stringstream dump;
+  
+    dump << "Agent : " << str_vec( pos() );
+    dump << " [" << dir().str() << "]";
+  
+  return dump.str();
+  }
   // ************************************************************* Agent::move
   void turn_left()
   {

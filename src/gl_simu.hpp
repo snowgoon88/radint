@@ -103,6 +103,7 @@ public:
       (10.f + 10.f)/(float)_screen_height );
       glColor3f( 0.f, 0.f, 0.f );
       _gl_text.render( fps_ss.str(), -9.f, 9.f );
+      _gl_text.render( _agent.str_dump(), -9.f, 9.f - _gl_text.line_height() );
 
       // // Display cbk
       _gl_env.render( projection );
@@ -178,10 +179,20 @@ private:
       // toggle _is_running
       _is_running = !_is_running;
     }
-    else if( key == GLFW_KEY_D) {
+    else if( key == GLFW_KEY_P) {
       // display l'Environnemnt
       std::cout << _env.str_dump() << std::endl;
     }
+    else if( key == GLFW_KEY_LEFT or key == GLFW_KEY_A) {
+      _agent.turn_left();
+    }
+    else if( key == GLFW_KEY_RIGHT or key == GLFW_KEY_D) {
+      _agent.turn_right();
+    }
+    else if( key == GLFW_KEY_UP or key == GLFW_KEY_W) {
+      _agent.advance();
+    }
+    
   };
   /**
    * Callback pour gérer les messages d'erreur de GLFW

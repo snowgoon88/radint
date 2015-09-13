@@ -1,14 +1,12 @@
 /* -*- coding: utf-8 -*- */
 
-#ifndef GL_ENVIRONMENT_HPP
-#define GL_ENVIRONMENT_HPP
+#ifndef GL_AGENT_HPP
+#define GL_AGENT_HPP
 
 /** 
- * Environnement est une séquence d'hexagones.
+ * Un triangle orienté.
  */
 #include "gl_utils.hpp"                   // GLUtils
-
-#include <math.h>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -17,38 +15,44 @@
 #include <glm/gtx/string_cast.hpp>
 
 // Model
-#include <environment.hpp>
+#include <agent.hpp>
 
 // ***************************************************************************
-// ************************************************************* GLEnvironment
+// ******************************************************************* GLAgent
 // ***************************************************************************
-class GLEnvironment
+class GLAgent
 {
   typedef std::pair<float,float> Vec2F;
 public:
-  // ************************************************* GLEnvironment::creation
-  GLEnvironment( Environment& env) :
-    _model(env)
+  // ******************************************************* GLAgent::creation
+  GLAgent( Agent& agent ) :
+    _model(agent)
   {
-    // VBO pour les lignes de l'hexagone
-    // Essaie de faire 3 hexagone (0,0), (2,0) et (2,1)
-    // GLfloat hex_vtx[(6*4)*5];
-    GLfloat hex_vtx[(6*4)* _model.l_cell().size() ];
-    Vec2F center;
-    _vbo_hex_size = 0;
-    for( auto& item: _model.l_cell()) {
-      center = coord_from_center( item.second->pos() );
-      _vbo_hex_size += add_hex( center.first, center.second,
-				&(hex_vtx[_vbo_hex_size]) );
-    }    
-    _vbo_hex_size = _vbo_hex_size/2;
+    // VBO pour les lignes des 2 triangles de l'agent
+    GLfloat agent_vtx[(3*2*2)];
+    _vbo_agent_size = 0;
+    agent_vtx[_vbo_agent_size++] = -0.2f;
+    agent_vtx[_vbo_agent_size++] =  0.f;
+    agent_vtx[_vbo_agent_size++] = -0.4f;
+    agent_vtx[_vbo_agent_size++] = -0.3f;
+    agent_vtx[_vbo_agent_size++] = 0.7f;
+    agent_vtx[_vbo_agent_size++] = 0.f;
+
+    agent_vtx[_vbo_agent_size++] = -0.2f;
+    agent_vtx[_vbo_agent_size++] = 0.f;
+    agent_vtx[_vbo_agent_size++] = 0.7f;
+    agent_vtx[_vbo_agent_size++] = 0.f;
+    agent_vtx[_vbo_agent_size++] = -0.4f;
+    agent_vtx[_vbo_agent_size++] = 0.3f;
+    
+    _vbo_agent_size = _vbo_agent_size/2;
     
     // VBO
-    glGenBuffers(1, &_vbo_hexes);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo_hexes);
+    glGenBuffers(1, &_vbo_agent);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_agent);
     // Pousse les points dans le VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(hex_vtx),
-		 hex_vtx, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(agent_vtx),
+		 agent_vtx, GL_STATIC_DRAW);
 
     // Delier les VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -100,26 +104,40 @@ public:
     }
   };
   // ********************************************** GLEnvironment::destruction
-  ~GLEnvironment()
+  ~GLAgent()
   {
     // Détruit le programme GLSL
     glDeleteProgram(_program);
     // Et les vbo
-    glDeleteBuffers(1, &_vbo_hexes);
+    glDeleteBuffers(1, &_vbo_agent);
   };
   // *************************************************** GLEnvironment::render
   void render( glm::mat4& projection )
   {
     glUseProgram( _program );
+
+    // Translation
+    Vec2F center = coord_from_center( _model.pos() );
+    glm::mat4 trans = glm::translate(glm::mat4(1.0f),
+				     glm::vec3( center.first,
+						center.second,
+						0.0));
+    // Rotation
+    glm::mat4 rotate = glm::rotate( glm::mat4(1.0f),
+				    (float) M_PI/2.f - _model.dir().index() * (float) M_PI/3.f,
+				    glm::vec3( 0.f, 0.f, 1.0f));
+
+    // Et finalement
+    glm::mat4 mvp = projection * trans * rotate;
+
     glUniformMatrix4fv(_uniform_mvp, 1, GL_FALSE,
-     		       glm::value_ptr(projection));
+     		       glm::value_ptr(mvp));
     
-    // LIGNES **************************************
-    // Couleur des lignes : BLACK
-    glUniform3f( _uniform_l_color, 0.f, 0.f, 0.f ); 
+    // Triangles Bleus
+    glUniform3f( _uniform_l_color, 0.f, 0.f, 1.f ); 
 
     // Dessiner la grille
-    glBindBuffer( GL_ARRAY_BUFFER, _vbo_hexes );
+    glBindBuffer( GL_ARRAY_BUFFER, _vbo_agent );
     glEnableVertexAttribArray( _attribute_coord2d );
     /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
     glVertexAttribPointer(
@@ -131,13 +149,12 @@ public:
       0                  // offset of first element
 			  );
     /* Push each element in buffer_vertices to the vertex shader */
-    glDrawArrays(GL_LINES, 0, _vbo_hex_size);
+    glDrawArrays(GL_TRIANGLES, 0, _vbo_agent_size);
   };
-
   // ************************************************ GLEnvironment::attributs
 private:
   /** Model : Environment */
-  Environment& _model;
+  Agent& _model;
   /** Program GLSL */
   GLuint _program;
   /** Variables globale du Programme GLSL */
@@ -145,8 +162,8 @@ private:
   /** Uniform var */
   GLint _uniform_l_color, _uniform_mvp;
   /** Vertex Buffer Object pour lines */
-  GLuint _vbo_hexes;
-  unsigned int _vbo_hex_size;
+  GLuint _vbo_agent;
+  unsigned int _vbo_agent_size;
 
   // ************************************************** GLEnvironment::convert
   Vec2F coord_from_center( const Vec2& pos ) const
@@ -159,21 +176,7 @@ private:
 
     return Vec2F(x,y);
   };
-  unsigned int add_hex( GLfloat xc, GLfloat yc, GLfloat* ptr )
-  {
-    for( unsigned int side = 0; side < 6; ++side) {
-      float angle = (float) side * M_PI /3.0;
-      *ptr++ = xc + (float) cosf(angle);
-      *ptr++ = yc + (float) sinf(angle);
-      angle += M_PI /3.0;
-      *ptr++ = xc + (float) cosf(angle);
-      *ptr++ = yc + (float) sinf(angle);
-    }
-
-    return 6*4;
-  }
 };
 
+#endif // GL_AGENT_HPP
 
-
-#endif // GL_ENVIRONMENT_HPP

@@ -62,8 +62,7 @@ public:
       for( unsigned int j = 0; j < _l_dir.size(); ++j) {
 	for( unsigned int side = 0; side < i; ++side) {
 	  std::cout << "   j=" <<j << " side=" << side << " >> ";
-	  position = {position.x + _l_dir[j].vec().x,
-		      position.y + _l_dir[j].vec().y};
+	  position += _l_dir[j].vec();
 	  std::cout << "Création en " << str_vec(position) << std::endl;
 	  _l_cell.insert( KeyCell(position, CellPtr( new Cell(position))) );
 	}

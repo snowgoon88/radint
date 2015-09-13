@@ -12,6 +12,7 @@
 
 // Model
 #include <environment.hpp>
+#include <agent.hpp>
 
 // ***************************************************************************
 int main( int argc, char *argv[] )
@@ -21,9 +22,11 @@ int main( int argc, char *argv[] )
 
   std::cout << "__ENVIRONMENT" << std::endl;
   Environment env(3);
+  std::cout << "__AGENT" << std::endl;
+  Agent agent;
 
   std::cout << "__SIMULATOR" << std::endl;
-  GLSimu simu_screen( app, env);
+  GLSimu simu_screen( app, env, agent);
 
   std::cout << "__GO" << std::endl;
   app.run<GLSimu,bool>( simu_screen );

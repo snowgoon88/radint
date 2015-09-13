@@ -9,10 +9,12 @@
 
 // Model
 #include <environment.hpp>
+#include <agent.hpp>
 
 // Viewer
 #include <gl_engine.hpp>
 #include <gl_environment.hpp>
+#include <gl_agent.hpp>
 #include <gl_text.hpp>
 
 #include <chrono>                      // std::chrono
@@ -28,10 +30,10 @@ class GLSimu
 public:
   // ******************************************************** GLSimu::creation
   /** Création avec un GLEngine */
-  GLSimu( GLEngine& engine, Environment& env) :
+  GLSimu( GLEngine& engine, Environment& env, Agent& agent) :
     _window(engine.window()),
-    _env(env), 
-    _gl_env(_env), _gl_text(),
+    _env(env), _agent(agent),
+    _gl_env(_env), _gl_agent(_agent), _gl_text(),
     _is_running(false),
     _frame_time_min(1000.0), _frame_time_max(0.0), _frame_time_avg(0.0)
   {
@@ -104,7 +106,8 @@ public:
 
       // // Display cbk
       _gl_env.render( projection );
-      
+      _gl_agent.render( projection );
+
       // Remove any programm so that glText can "work"
       glUseProgram(0);
       
@@ -141,8 +144,10 @@ private:
   int _screen_width, _screen_height;
   /** Model */
   Environment& _env;
+  Agent& _agent;
   /** Viewer */
   GLEnvironment _gl_env;
+  GLAgent _gl_agent;
   GLText _gl_text;
   // ************************************************************** simulation
   bool _is_running;

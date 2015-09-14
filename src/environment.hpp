@@ -11,6 +11,9 @@
 
 #include <memory>                         // std::shared_ptr
 #include <map>                            // std::map
+#include <list>                           // std::list
+
+#include <entity.hpp>
 
 // ***************************************************************************
 // ********************************************************************** Cell
@@ -19,24 +22,60 @@ class Cell
 {
 public:
   // ********************************************************** Cell::creation
-  Cell( const Vec2 &pos = {0,0} ) : _pos(pos) {};
-  Cell( const Cell &cell ) : _pos( cell.pos()) {};
+  Cell( const Vec2 &pos = {0,0} ) : _pos(pos), _entity(nullptr)  {};
+  Cell( const Cell &cell ) : _pos( cell.pos()), _entity(nullptr)  {};
 
   // **************************************************************** Cell:str
   /** dump */
   std::string str_dump() const
   {
-    return "Cell "+str_vec(_pos);
+    return "Cell "+str_vec(_pos)+" "+( not is_empty() ? "Entity "+_entity->str_dump() : "Vide");
   };
 
+  // ************************************************************ Cell::status
+  bool is_empty() const
+  {
+    return (_entity == nullptr);
+  }
+  // ************************************************************ Cell::entity
+  void add( EntityPtr item )
+  {
+    _entity = item;
+  }
   // ********************************************************* Cell::attributs
   const Vec2& pos() const {return _pos;};
 
 private:
   /** position */
   Vec2 _pos;
+  /** Entity sur cette Cell */
+  EntityPtr _entity;
 };
 typedef std::shared_ptr<Cell> CellPtr;
+
+// ***************************************************************************
+// **************************************************** Exception::Environment
+// ***************************************************************************
+namespace Exception {
+  
+  class Env : public std::exception {
+  private:
+    std::string message;
+  public:
+    Env(const std::string& kind,
+	const std::string& msg) {
+      message = std::string("Environment exception : ")
+	+ kind + " : " + msg;
+    }
+    
+    virtual ~Env(void) throw () {}
+    
+    virtual const char * what(void) const throw ()
+    {
+      return message.c_str();
+    }
+  };
+};
 
 // ***************************************************************************
 // *************************************************************** Environment
@@ -45,6 +84,7 @@ class Environment
 {
   typedef std::map<Vec2,CellPtr> CCellPtr;
   typedef std::pair<Vec2,CellPtr> KeyCell;
+  typedef std::list<EntityPtr> CEntityPtr;
   
 public:
   Environment( unsigned int size )
@@ -78,18 +118,44 @@ public:
   {
     std::stringstream dump;
   
-    dump << "__ENV__ ";
+    dump << "__ENV__ " << std::endl;
     for( auto& item: _l_cell) {
       dump << str_vec(item.first) << " : " << item.second->str_dump() << std::endl;
     } 
     
     return dump.str();
   }
+  // ***************************************************** Environment::entity
+  /**
+   * Ajoute l'Entity dans l'environnement si la pos() est une Cell valide et 
+   * vide.
+   */
+  void add( EntityPtr item )
+  {
+    // Est-ce que c'est une Cell de l'Environnement ?
+    auto search = _l_cell.find( item->pos() );
+    if( search != _l_cell.end()) {
+      CellPtr cell = search->second;
+      // Est-ce que la Cell est vide ?
+      if( cell->is_empty() ) {
+	cell->add( item );
+	_l_entity.push_back( item );
+      }
+      else {
+	throw Exception::Env( "CellError", "Cell pas vide" );
+      }
+    }
+    else {
+      throw Exception::Env( "KeyError", "Cell pas trouvée");
+    }
+  };
 
   // ************************************************** Environment::attributs
   CCellPtr l_cell() const { return _l_cell; };
+  CEntityPtr l_entity() const { return _l_entity; };
 private:
   CCellPtr _l_cell;
+  CEntityPtr _l_entity;
 };
 
 #endif // ENVIRONMENT_HPP

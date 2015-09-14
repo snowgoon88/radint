@@ -10,15 +10,17 @@
  * Il peut bouger : turn_right(), turn_left(), advance().
  */
 
+#include <entity.hpp>
+
 // ***************************************************************************
 // ********************************************************************* Agent
 // ***************************************************************************
-class Agent
+class Agent : public Entity
 {
 public:
   // ********************************************************* Agent::creation
   Agent( const Vec2& pos = {0,0}, const Direction& dir = _dir_no ) : 
-    _pos(pos), _dir(dir)
+    Entity(pos,true,false), _dir(dir)
   {};
   // ************************************************************** Agent::str
   std::string str_dump() 
@@ -45,10 +47,8 @@ public:
   }
 
   // ******************************************************** Agent::attributs
-  const Vec2& pos() const {return _pos;};
   const Direction& dir() const {return _dir;};
-private:
-  Vec2 _pos;
+protected:
   Direction _dir;
 };
 

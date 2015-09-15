@@ -22,6 +22,15 @@ int main( int argc, char *argv[] )
 
   std::cout << "__ENVIRONMENT" << std::endl;
   Environment env(3);
+  // Ajout d'Entity
+  EntityPtr item1 = EntityPtr( new Wall( {1,1} ));
+  env.add( item1 );
+  EntityPtr item2 = EntityPtr( new Algae( {-1,1} ));
+  env.add( item2 );
+  EntityPtr item3 = EntityPtr( new Wall( {2,0} ));
+  env.add( item3 );
+  
+  
   std::cout << "__AGENT" << std::endl;
   Agent agent;
 

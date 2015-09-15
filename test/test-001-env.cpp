@@ -14,7 +14,7 @@ int main( int argc, char *argv[] )
 {
   // Création environnement
   Environment env(3);
-  std::cout << env.str_dump() << std::endl;
+  std::cout << envg.str_dump() << std::endl;
 
   // Ajout d'Entity
   EntityPtr item1 = EntityPtr( new Entity( {1,1} ));

@@ -18,6 +18,8 @@
 
 // Model
 #include <environment.hpp>
+// Viewer
+#include <gl_entity.hpp>
 
 // ***************************************************************************
 // ************************************************************* GLEnvironment
@@ -28,7 +30,8 @@ class GLEnvironment
 public:
   // ************************************************* GLEnvironment::creation
   GLEnvironment( Environment& env) :
-    _model(env)
+    _model(env),
+    _gl_entity(nullptr)
   {
     // VBO pour les lignes de l'hexagone
     // Essaie de faire 3 hexagone (0,0), (2,0) et (2,1)
@@ -98,6 +101,10 @@ public:
       std::cerr <<  "Pb pour lier l'attribut " << attribute_name << std::endl;
       exit( EXIT_FAILURE );
     }
+
+    // GLEnvironment
+    _gl_entity = new GLEntity( _attribute_coord2d, _uniform_l_color,
+			       _uniform_mvp );
   };
   // ********************************************** GLEnvironment::destruction
   ~GLEnvironment()
@@ -106,6 +113,9 @@ public:
     glDeleteProgram(_program);
     // Et les vbo
     glDeleteBuffers(1, &_vbo_hexes);
+
+    // Et viewer
+    delete _gl_entity;
   };
   // *************************************************** GLEnvironment::render
   void render( glm::mat4& projection )
@@ -132,12 +142,19 @@ public:
 			  );
     /* Push each element in buffer_vertices to the vertex shader */
     glDrawArrays(GL_LINES, 0, _vbo_hex_size);
+
+    // ENTITY **************************************
+    for( auto& item: _model.l_entity()) {
+      _gl_entity->render( projection, item );
+    }
   };
 
   // ************************************************ GLEnvironment::attributs
 private:
   /** Model : Environment */
   Environment& _model;
+  /** Viewer */
+  GLEntity* _gl_entity;
   /** Program GLSL */
   GLuint _program;
   /** Variables globale du Programme GLSL */

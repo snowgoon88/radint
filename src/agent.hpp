@@ -9,6 +9,7 @@
  *
  * Il peut bouger : turn_right(), turn_left(), advance().
  */
+#include <global.hpp>
 
 #include <entity.hpp>
 
@@ -45,7 +46,11 @@ public:
   {
     _pos += dir().vec();
   }
-
+  // *********************************************************** Agent::intent
+  Vec2 intent_advance()
+  {
+    return pos() + dir().vec();
+  }
   // ******************************************************** Agent::attributs
   const Direction& dir() const {return _dir;};
 protected:

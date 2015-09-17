@@ -29,13 +29,13 @@ int main( int argc, char *argv[] )
   env.add( item2 );
   EntityPtr item3 = EntityPtr( new Wall( {2,0} ));
   env.add( item3 );
-  
-  
+   
   std::cout << "__AGENT" << std::endl;
   Agent agent;
 
   std::cout << "__SIMULATOR" << std::endl;
-  GLSimu simu_screen( app, env, agent);
+  Simu simu( env, agent );
+  GLSimu simu_screen( app, simu );
 
   std::cout << "__GO" << std::endl;
   app.run<GLSimu,bool>( simu_screen );

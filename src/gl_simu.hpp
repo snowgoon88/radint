@@ -10,6 +10,7 @@
 // Model
 #include <environment.hpp>
 #include <agent.hpp>
+#include <simulator.hpp>
 
 // Viewer
 #include <gl_engine.hpp>
@@ -30,10 +31,10 @@ class GLSimu
 public:
   // ******************************************************** GLSimu::creation
   /** Création avec un GLEngine */
-  GLSimu( GLEngine& engine, Environment& env, Agent& agent) :
+  GLSimu( GLEngine& engine, Simu& simu ) :
     _window(engine.window()),
-    _env(env), _agent(agent),
-    _gl_env(_env), _gl_agent(_agent), _gl_text(),
+    _simu( simu ),
+    _gl_env( simu.env() ), _gl_agent( simu.agent() ), _gl_text(),
     _is_running(false),
     _frame_time_min(1000.0), _frame_time_max(0.0), _frame_time_avg(0.0)
   {
@@ -45,7 +46,7 @@ public:
     glfwSetWindowUserPointer( _window, this);
     glfwSetKeyCallback(_window, key_callback);
 
-    std::cout << _env.str_dump() << std::endl;
+    std::cout << _simu.env().str_dump() << std::endl;
 
   };
   // ********************************************************** GLSimu::render
@@ -103,7 +104,7 @@ public:
       (10.f + 10.f)/(float)_screen_height );
       glColor3f( 0.f, 0.f, 0.f );
       _gl_text.render( fps_ss.str(), -9.f, 9.f );
-      _gl_text.render( _agent.str_dump(), -9.f, 9.f - _gl_text.line_height() );
+      _gl_text.render( _simu.agent().str_dump(), -9.f, 9.f - _gl_text.line_height() );
 
       // // Display cbk
       _gl_env.render( projection );
@@ -144,8 +145,7 @@ private:
   GLFWwindow* _window;
   int _screen_width, _screen_height;
   /** Model */
-  Environment& _env;
-  Agent& _agent;
+  Simu& _simu;
   /** Viewer */
   GLEnvironment _gl_env;
   GLAgent _gl_agent;
@@ -181,16 +181,24 @@ private:
     }
     else if( key == GLFW_KEY_P) {
       // display l'Environnemnt
-      std::cout << _env.str_dump() << std::endl;
+      std::cout << _simu.env().str_dump() << std::endl;
     }
     else if( key == GLFW_KEY_LEFT or key == GLFW_KEY_A) {
-      _agent.turn_left();
+      // _agent.turn_left();
+      _simu.apply_turn_left();
     }
     else if( key == GLFW_KEY_RIGHT or key == GLFW_KEY_D) {
-      _agent.turn_right();
+      // _agent.turn_right();
+      _simu.apply_turn_right();
     }
     else if( key == GLFW_KEY_UP or key == GLFW_KEY_W) {
-      _agent.advance();
+      // _agent.advance();
+      try {
+	_simu.apply_advance();
+      }
+      catch( Exception::Sim& e) {
+	std::cerr << "WARN " << e.what() << std::endl;
+      }
     }
     
   };

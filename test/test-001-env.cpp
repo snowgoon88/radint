@@ -14,7 +14,7 @@ int main( int argc, char *argv[] )
 {
   // Création environnement
   Environment env(3);
-  std::cout << envg.str_dump() << std::endl;
+  std::cout << env.str_dump() << std::endl;
 
   // Ajout d'Entity
   EntityPtr item1 = EntityPtr( new Entity( {1,1} ));
@@ -52,6 +52,11 @@ int main( int argc, char *argv[] )
     std::cout << "Exception normale" << std::endl;
     std::cout << e.what() << std::endl;
   }
+
+  std::cout << "CHERCHER CELL" << std::endl;
+  Vec2 v{0,0};
+  CellPtr c = env.cell( v );
+  std::cout << "c " << str_vec( v ) << " : " << c->str_dump() << std::endl;
 
   
   return 0;

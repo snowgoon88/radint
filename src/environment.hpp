@@ -37,6 +37,13 @@ public:
   {
     return (_entity == nullptr);
   }
+  bool is_traversable() const
+  {
+    if( not is_empty() ) {
+      return _entity->is_traversable();
+    }
+    return true;
+  }
   // ************************************************************ Cell::entity
   void add( EntityPtr item )
   {
@@ -149,7 +156,21 @@ public:
       throw Exception::Env( "KeyError", "Cell pas trouvée");
     }
   };
-
+  // ******************************************************* Environment::cell
+  /**
+   * @return CellPtr ou nullptr.
+   */
+  CellPtr cell( const Vec2& pos )
+  {
+    std::cout << "cell pos=" << str_vec(pos) << std::endl;
+    auto search = _l_cell.find( pos );
+    if( search != _l_cell.end() ) {
+      std::cout << "cell " << str_vec(search->first) << " : " << search->second->str_dump() << std::endl;
+      return search->second;
+    }
+    std::cout << "cell null" << std::endl;
+    return nullptr;
+  };
   // ************************************************** Environment::attributs
   CCellPtr l_cell() const { return _l_cell; };
   CEntityPtr l_entity() const { return _l_entity; };

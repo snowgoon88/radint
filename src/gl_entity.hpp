@@ -74,6 +74,23 @@ public:
     // Pousse les points dans le VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(algae_vtx),
 		 algae_vtx, GL_STATIC_DRAW);
+
+    // Préparation du VBO pour la nourriture : GL_TRIANGLE_FAN
+    GLfloat food_vtx[14*2];
+    _vbo_food_size = 0;
+    food_vtx[_vbo_food_size++] = 0.f;
+    food_vtx[_vbo_food_size++] = 0.f;
+    for( unsigned int i = 0; i < 13; ++i) {
+      food_vtx[_vbo_food_size++] = 0.2f * cosf( (float)M_PI/6.f * i );
+      food_vtx[_vbo_food_size++] = 0.2f * sinf( (float)M_PI/6.f * i );
+    }
+    _vbo_food_size = _vbo_food_size / 2;
+    // VBO
+    glGenBuffers(1, &_vbo_food);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_food);
+    // Pousse les points dans le VBO
+    glBufferData(GL_ARRAY_BUFFER, sizeof(food_vtx),
+		 food_vtx, GL_STATIC_DRAW);
     
     // Delier les VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -81,6 +98,7 @@ public:
   ~GLEntity()
   {
     // Et les vbo
+    glDeleteBuffers(1, &_vbo_food);
     glDeleteBuffers(1, &_vbo_algae);
     glDeleteBuffers(1, &_vbo_wall);
   }
@@ -94,6 +112,9 @@ public:
     }
     else if( Algae* a = dynamic_cast<Algae*>(item.get()) ) {
       render( projection, *a);
+    }
+    else if( Food* f = dynamic_cast<Food*>(item.get()) ) {
+      render( projection, *f);
     }
     else {
       std::cerr <<  "GLEntity::render avec type inconnu" << std::endl;
@@ -163,7 +184,38 @@ public:
     /* Push each element in buffer_vertices to the vertex shader */
     glDrawArrays(GL_TRIANGLES, 0, _vbo_algae_size );
   };
+  /** Food */
+  void render( glm::mat4& projection, Food& food )
+  {
+    // Translation
+    Vec2F center = coord_from_center( food.pos() );
+    glm::mat4 trans = glm::translate(glm::mat4(1.0f),
+				     glm::vec3( center.first,
+						center.second,
+						0.0));
+    // Et finalement
+    glm::mat4 mvp = projection * trans;
 
+    glUniformMatrix4fv(_uniform_mvp, 1, GL_FALSE,
+     		       glm::value_ptr(mvp));
+
+    // Triangles bleu
+    glUniform3f( _uniform_l_color, 0.f, 0.f, 1.f );
+    // Obstacle
+    glBindBuffer( GL_ARRAY_BUFFER, _vbo_food );
+    glEnableVertexAttribArray( _attribute_coord2d );
+    /* Describe our vertices array to OpenGL (it can't guess its format automatically) */
+    glVertexAttribPointer(
+      _attribute_coord2d, // attribute
+      2,                 // number of elements per vertex, here (x,y)
+      GL_FLOAT,          // the type of each element
+      GL_FALSE,          // take our values as-is
+      0,                 // stride
+      0                  // offset of first element
+			  );
+    /* Push each element in buffer_vertices to the vertex shader */
+    glDrawArrays(GL_TRIANGLE_FAN, 0, _vbo_food_size);
+  };
   // ***************************************************** GLEntity::attributs
 private:
    /** Variables globale du Programme GLSL */
@@ -171,8 +223,8 @@ private:
   /** Uniform var */
   GLint _uniform_l_color, _uniform_mvp;
   /** Vertexw buffers */
-  GLuint _vbo_algae, _vbo_wall;
-  unsigned int _vbo_algae_size, _vbo_wall_size;
+  GLuint _vbo_algae, _vbo_wall, _vbo_food;
+  unsigned int _vbo_algae_size, _vbo_wall_size, _vbo_food_size;
 
   // ******************************************************** GLEntity::convert
   Vec2F coord_from_center( const Vec2& pos ) const

@@ -29,6 +29,8 @@ int main( int argc, char *argv[] )
   env.add( item2 );
   EntityPtr item3 = EntityPtr( new Wall( {2,0} ));
   env.add( item3 );
+  EntityPtr item4 = EntityPtr( new Food( {0,-2} ));
+  env.add( item4 );
    
   std::cout << "__AGENT" << std::endl;
   Agent agent;

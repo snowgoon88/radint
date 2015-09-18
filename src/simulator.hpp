@@ -85,6 +85,14 @@ public:
   {
     _agent.turn_right();
   };
+  // ********************************************************** Simu::perceive
+  /**
+   * Agent Internal Perception.
+   */
+  void apply_proprioception()
+  {
+    _agent.proprioception( _env.cell( _agent.pos() )->entity() );
+  };
   // ********************************************************* Simu::attributs
   Environment& env() const { return _env; };
   Agent& agent() const { return _agent; };

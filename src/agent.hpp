@@ -38,6 +38,7 @@ class Stimulus
   static Stimulus NOTHING("NOTHING");
   static Stimulus MOVED("MOVED");
   static Stimulus BUMPED("BUMPED");
+  static Stimulus EATEN("EATEN");
 
 // ***************************************************************************
 // ********************************************************************* Agent
@@ -83,6 +84,15 @@ public:
     _proprio = BUMPED; // par défaut
     return pos() + dir().vec();
   }
+  // ******************************************************* Agent::perception
+  void proprioception( EntityPtr item )
+  {
+    if( item ) {
+      if( dynamic_cast<Food*>(item.get()) ) {
+	_proprio = EATEN;
+      }
+    } 
+  };
   // ******************************************************** Agent::attributs
   const Direction& dir() const {return _dir;};
 protected:

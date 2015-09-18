@@ -186,15 +186,18 @@ private:
     else if( key == GLFW_KEY_LEFT or key == GLFW_KEY_A) {
       // _agent.turn_left();
       _simu.apply_turn_left();
+      _simu.apply_proprioception();
     }
     else if( key == GLFW_KEY_RIGHT or key == GLFW_KEY_D) {
       // _agent.turn_right();
       _simu.apply_turn_right();
+      _simu.apply_proprioception();
     }
     else if( key == GLFW_KEY_UP or key == GLFW_KEY_W) {
       // _agent.advance();
       try {
 	_simu.apply_advance();
+	_simu.apply_proprioception();
       }
       catch( Exception::Sim& e) {
 	std::cerr << "WARN " << e.what() << std::endl;

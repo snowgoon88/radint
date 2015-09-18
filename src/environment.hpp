@@ -49,6 +49,7 @@ public:
   {
     _entity = item;
   }
+  EntityPtr entity() const { return _entity; };
   // ********************************************************* Cell::attributs
   const Vec2& pos() const {return _pos;};
 

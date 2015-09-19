@@ -47,6 +47,7 @@ static Stimulus YELLOW("Y");
 static Stimulus RED("R");
 static Stimulus BLUE("B");
 static Stimulus GREEN("G");
+static Stimulus NOTSEEN("?");
 
 // ***************************************************************************
 // ******************************************************************** Entity

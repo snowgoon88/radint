@@ -31,7 +31,6 @@ public:
   {
     return "Cell "+str_vec(_pos)+" "+( not is_empty() ? "Entity "+_entity->str_dump() : "Vide");
   };
-
   // ************************************************************ Cell::status
   bool is_empty() const
   {
@@ -41,6 +40,13 @@ public:
   {
     if( not is_empty() ) {
       return _entity->is_traversable();
+    }
+    return true;
+  }
+  bool is_transparent() const
+  {
+    if( not is_empty() ) {
+      return not _entity->is_opaque();
     }
     return true;
   }

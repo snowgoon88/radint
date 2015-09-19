@@ -117,13 +117,90 @@ public:
     if( right and not right->is_empty() ) {
       near[2] = right->entity()->stimulus();
     }
+    // De la gauche vers la droite
+    std::array<Stimulus, 5> far{NOTSEEN, NOTSEEN, NOTSEEN, NOTSEEN, NOTSEEN};
+    CellPtr cell;
+    if( left and left->is_transparent() ) {
+      // leftmost
+      cell = _env.cell( left->pos() + rotate_left(_agent.dir()).vec() );
+      if( cell and not cell->is_empty() ) {
+	far[0] = cell->entity()->stimulus();
+      }
+      else if( cell and cell->is_empty() ) {
+	far[0] = YELLOW;
+      }
+      // leftfront
+      cell = _env.cell( left->pos() + _agent.dir().vec() );
+      if( cell and not cell->is_empty() ) {
+	far[1] = cell->entity()->stimulus();
+      }
+      else if( cell and cell->is_empty() ) {
+	far[1] = YELLOW;
+      }
+    }
+    if( right and right->is_transparent() ) {
+      // rightmost
+      cell = _env.cell( right->pos() + rotate_right(_agent.dir()).vec() );
+      if( cell and not cell->is_empty() ) {
+	far[4] = cell->entity()->stimulus();
+      }
+      else if( cell and cell->is_empty() ) {
+	far[4] = YELLOW;
+      }
+      // rightfront
+      cell = _env.cell( right->pos() + _agent.dir().vec() );
+      if( cell and not cell->is_empty() ) {
+	far[3] = cell->entity()->stimulus();
+      }
+      else if( cell and cell->is_empty() ) {
+	far[3] = YELLOW;
+      }
+    }
+    if( front and front->is_transparent() ) {
+      // far front
+      cell = _env.cell( front->pos() + _agent.dir().vec() );
+      if( cell and not cell->is_empty() ) {
+	far[2] = cell->entity()->stimulus();
+      }
+      else if( cell and cell->is_empty() ) {
+	far[2] = YELLOW;
+      }
+      // leftfront
+      if( far[1] == NOTSEEN ) {
+	cell = _env.cell( front->pos() + rotate_left(_agent.dir()).vec() );
+	if( cell and not cell->is_empty() ) {
+	  far[1] = cell->entity()->stimulus();
+	}
+	else if( cell and cell->is_empty() ) {
+	  far[1] = YELLOW;
+	}
+      }
+      else if( cell and cell->is_empty() ) {
+	far[1] = YELLOW;
+      }
+      // rightfront
+      if( far[3] == NOTSEEN ) {
+	cell = _env.cell( front->pos() + rotate_right(_agent.dir()).vec() );
+	if( cell and not cell->is_empty() ) {
+	  far[3] = cell->entity()->stimulus();
+	}
+	else if( cell and cell->is_empty() ) {
+	  far[3] = YELLOW;
+	}
+      }
+    }
 
     // DUMP
     std::cout << "PER_NEAR =";
     for( auto& per: near) {
       std::cout << " " << per.name();
     }
+    std::cout << "  PER_FAR =";
+    for( auto& per: far) {
+      std::cout << " " << per.name();
+    }
     std::cout << std::endl;
+
   };
   // ********************************************************* Simu::attributs
   Environment& env() const { return _env; };

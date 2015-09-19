@@ -49,6 +49,10 @@ public:
   {
     _entity = item;
   }
+  void empty()
+  {
+    _entity = nullptr;
+  };
   EntityPtr entity() const { return _entity; };
   // ********************************************************* Cell::attributs
   const Vec2& pos() const {return _pos;};
@@ -157,6 +161,16 @@ public:
       throw Exception::Env( "KeyError", "Cell pas trouvée");
     }
   };
+  /**
+   * Enlève l'élément item.
+   */
+  void erase( EntityPtr item )
+  {
+    // d'abord de la liste
+    _l_entity.remove( item );
+    // Puis de la Cell
+    cell( item->pos() )->empty();
+  }
   // ******************************************************* Environment::cell
   /**
    * @return CellPtr ou nullptr.

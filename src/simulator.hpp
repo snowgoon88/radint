@@ -13,6 +13,8 @@
 #include <agent.hpp>
 #include <entity.hpp>
 
+#include <array>
+
 // ***************************************************************************
 // *********************************************************** Exception::Simu
 // ***************************************************************************
@@ -91,7 +93,37 @@ public:
    */
   void apply_proprioception()
   {
-    _agent.proprioception( _env.cell( _agent.pos() )->entity() );
+    // Si l'agent est sur de la nourriture
+    EntityPtr item = _env.cell( _agent.pos() )->entity();
+    if( dynamic_cast<Food*>( item.get() ) ) {
+      _agent.eat();
+      _env.erase( item );
+    }
+
+    // Perception
+    // Status d'une case : YELLOW, RED, BLUE, GREEN, NOTSEEN
+    // Devant
+    CellPtr front = _env.cell( _agent.pos() + _agent.dir().vec() );
+    CellPtr left  = _env.cell( _agent.pos() + rotate_left(_agent.dir()).vec() );
+    CellPtr right = _env.cell( _agent.pos() + rotate_right(_agent.dir()).vec() );
+    // left, front, right
+    std::array<Stimulus, 3> near{YELLOW, YELLOW, YELLOW};
+    if( left and not left->is_empty() ) {
+      near[0] = left->entity()->stimulus();
+    }
+    if( front and not front->is_empty() ) {
+      near[1] = front->entity()->stimulus();
+    }
+    if( right and not right->is_empty() ) {
+      near[2] = right->entity()->stimulus();
+    }
+
+    // DUMP
+    std::cout << "PER_NEAR =";
+    for( auto& per: near) {
+      std::cout << " " << per.name();
+    }
+    std::cout << std::endl;
   };
   // ********************************************************* Simu::attributs
   Environment& env() const { return _env; };

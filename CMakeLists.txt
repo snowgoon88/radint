@@ -17,7 +17,7 @@ pkg_search_module(FTGL REQUIRED ftgl)
 #######################################
 
 # cflags added by the package
-SET(PROJECT_CFLAGS ${PROJECT_CFLAGS} "-Wall -std=c++11 -Iinclude")
+SET(PROJECT_CFLAGS ${PROJECT_CFLAGS} "-Wall -std=c++11 -Iinclude -g")
 
 # cflags added by the pkg-config dependencies contains ';' as separator. This is a fix.
 string(REPLACE ";" " " GLEW_CFLAGS "${GLEW_CFLAGS}")

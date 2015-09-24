@@ -107,7 +107,7 @@ public:
     CellPtr left  = _env.cell( _agent.pos() + rotate_left(_agent.dir()).vec() );
     CellPtr right = _env.cell( _agent.pos() + rotate_right(_agent.dir()).vec() );
     // left, front, right
-    std::array<Stimulus, 3> near{YELLOW, YELLOW, YELLOW};
+    std::array<Stimulus, 3> near{Stimulus::YELLOW, Stimulus::YELLOW, Stimulus::YELLOW};
     if( left and not left->is_empty() ) {
       near[0] = left->entity()->stimulus();
     }
@@ -118,7 +118,7 @@ public:
       near[2] = right->entity()->stimulus();
     }
     // De la gauche vers la droite
-    std::array<Stimulus, 5> far{NOTSEEN, NOTSEEN, NOTSEEN, NOTSEEN, NOTSEEN};
+    std::array<Stimulus, 5> far{Stimulus::NOTSEEN, Stimulus::NOTSEEN, Stimulus::NOTSEEN, Stimulus::NOTSEEN, Stimulus::NOTSEEN};
     CellPtr cell;
     if( left and left->is_transparent() ) {
       // leftmost
@@ -127,7 +127,7 @@ public:
 	far[0] = cell->entity()->stimulus();
       }
       else if( cell and cell->is_empty() ) {
-	far[0] = YELLOW;
+	far[0] = Stimulus::YELLOW;
       }
       // leftfront
       cell = _env.cell( left->pos() + _agent.dir().vec() );
@@ -135,7 +135,7 @@ public:
 	far[1] = cell->entity()->stimulus();
       }
       else if( cell and cell->is_empty() ) {
-	far[1] = YELLOW;
+	far[1] = Stimulus::YELLOW;
       }
     }
     if( right and right->is_transparent() ) {
@@ -145,7 +145,7 @@ public:
 	far[4] = cell->entity()->stimulus();
       }
       else if( cell and cell->is_empty() ) {
-	far[4] = YELLOW;
+	far[4] = Stimulus::YELLOW;
       }
       // rightfront
       cell = _env.cell( right->pos() + _agent.dir().vec() );
@@ -153,7 +153,7 @@ public:
 	far[3] = cell->entity()->stimulus();
       }
       else if( cell and cell->is_empty() ) {
-	far[3] = YELLOW;
+	far[3] = Stimulus::YELLOW;
       }
     }
     if( front and front->is_transparent() ) {
@@ -163,29 +163,29 @@ public:
 	far[2] = cell->entity()->stimulus();
       }
       else if( cell and cell->is_empty() ) {
-	far[2] = YELLOW;
+	far[2] = Stimulus::YELLOW;
       }
       // leftfront
-      if( far[1] == NOTSEEN ) {
+      if( far[1] == Stimulus::NOTSEEN ) {
 	cell = _env.cell( front->pos() + rotate_left(_agent.dir()).vec() );
 	if( cell and not cell->is_empty() ) {
 	  far[1] = cell->entity()->stimulus();
 	}
 	else if( cell and cell->is_empty() ) {
-	  far[1] = YELLOW;
+	  far[1] = Stimulus::YELLOW;
 	}
       }
       else if( cell and cell->is_empty() ) {
-	far[1] = YELLOW;
+	far[1] = Stimulus::YELLOW;
       }
       // rightfront
-      if( far[3] == NOTSEEN ) {
+      if( far[3] == Stimulus::NOTSEEN ) {
 	cell = _env.cell( front->pos() + rotate_right(_agent.dir()).vec() );
 	if( cell and not cell->is_empty() ) {
 	  far[3] = cell->entity()->stimulus();
 	}
 	else if( cell and cell->is_empty() ) {
-	  far[3] = YELLOW;
+	  far[3] = Stimulus::YELLOW;
 	}
       }
     }
@@ -193,11 +193,11 @@ public:
     // DUMP
     std::cout << "PER_NEAR =";
     for( auto& per: near) {
-      std::cout << " " << per.name();
+      std::cout << " " << str_enum(per);
     }
     std::cout << "  PER_FAR =";
     for( auto& per: far) {
-      std::cout << " " << per.name();
+      std::cout << " " << str_enum(per);
     }
     std::cout << std::endl;
 

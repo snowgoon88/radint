@@ -16,38 +16,20 @@
  */
 
 #include <memory>                         // std::shared_ptr
+#include <strenum.hpp>
 
-class Stimulus
-  {
-  public:
-    static int _global_id;
-  public:
-    Stimulus( std::string name ) : _name(name)
-    {
-      _id = _global_id++;
-    };
-    bool operator==( const Stimulus& rhs ) const {
-      return _id == rhs._id;
-    }
-    std::string name() const { return _name; };
-  private:
-    friend std::ostream& operator<<(std::ostream& os, const Stimulus& stim );
-    int _id;
-    std::string _name;
-  };
-int Stimulus::_global_id = 0;
-std::ostream& operator<<( std::ostream& os, const Stimulus& stim ) {
-  return os << stim.name();
-}
-static Stimulus NOTHING("NOTHING");
-static Stimulus MOVED("MOVED");
-static Stimulus BUMPED("BUMPED");
-static Stimulus FED("FED");
-static Stimulus YELLOW("Y");
-static Stimulus RED("R");
-static Stimulus BLUE("B");
-static Stimulus GREEN("G");
-static Stimulus NOTSEEN("?");
+
+// ****************************************************************** Stimulus
+enum class Stimulus {NOTHING=0, MOVED, BUMPED, FED,
+    YELLOW, RED, BLUE, GREEN, NOTSEEN};
+template<> std::string EnumString<Stimulus>::data[] = {
+  "NOTHING", "MOVED", "BUMPED", "FED",
+  "Y", "R", "B", "G", "?" };
+// *********************************************************************** Act
+enum class Act {FORWARD=0, LEFT30, RIGHT30};
+template<> std::string EnumString<Act>::data[] = {
+  "F", "L30", "R30" };
+// ***************************************************************************
 
 // ***************************************************************************
 // ******************************************************************** Entity
@@ -58,7 +40,7 @@ public:
   // ******************************************************** Entity::creation
   Entity( const Vec2& pos = {0,0}, 
 	  bool opaque=true, bool traversable=true,
-	  Stimulus& stim = YELLOW ) :
+	  Stimulus stim = Stimulus::YELLOW ) :
     _pos(pos), _opaque(opaque), _traversable(traversable), _stimulus(stim)
   {};
   // ************************************************************* Entity::str
@@ -70,7 +52,7 @@ public:
     dump << str_vec(pos()) << " - ";
     dump << ( is_opaque() ? " Opaque" : " Transparent");
     dump << ( is_traversable() ? " Traversable" : " Obstacle");
-    dump << " Stim=" << _stimulus.name();
+    dump << " Stim=" << str_enum(_stimulus);
 
     return dump.str();
   };
@@ -85,7 +67,7 @@ protected:
   Vec2 _pos;           /** position */
   bool _opaque;        /** is Entity opaque */
   bool _traversable;   /** is Entity travesable */
-  Stimulus& _stimulus; /** quel genre de Stimulus évoqué */
+  Stimulus _stimulus; /** quel genre de Stimulus évoqué */
 };
 // *********************************************************************** Ptr
 typedef std::shared_ptr<Entity> EntityPtr;
@@ -98,7 +80,7 @@ class Wall : public Entity
 {
 public:
   // ********************************************************** Wall::creation
-  Wall( const Vec2& pos = {0,0}) : Entity(pos,true,false,GREEN) {};
+  Wall( const Vec2& pos = {0,0}) : Entity(pos,true,false,Stimulus::GREEN) {};
   // *************************************************************** Wall::str
   /** dump */
   virtual std::string str_dump() const
@@ -113,7 +95,7 @@ class Algae : public Entity
 {
 public:
    // ******************************************************** Algae::creation
-  Algae( const Vec2& pos = {0,0}) : Entity(pos,true,true,RED) {};
+  Algae( const Vec2& pos = {0,0}) : Entity(pos,true,true,Stimulus::RED) {};
   // ************************************************************** Algae::str
   /** dump */
   virtual std::string str_dump() const
@@ -128,7 +110,7 @@ class Food : public Entity
 {
 public:
    // ********************************************************* Food::creation
-  Food( const Vec2& pos = {0,0}) : Entity(pos,false,true,BLUE) {};
+  Food( const Vec2& pos = {0,0}) : Entity(pos,false,true,Stimulus::BLUE) {};
   // *************************************************************** Food::str
   /** dump */
   virtual std::string str_dump() const
@@ -136,7 +118,5 @@ public:
     return "__FOOD "+Entity::str_dump();
   };
 };
-
-
 
 #endif // ENTITY_HPP

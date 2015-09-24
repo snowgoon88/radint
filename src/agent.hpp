@@ -22,7 +22,7 @@ public:
 
   // ********************************************************* Agent::creation
   Agent( const Vec2& pos = {0,0}, const Direction& dir = _dir_no ) : 
-    Entity(pos,true,false), _dir(dir), _proprio(NOTHING)
+    Entity(pos,true,false), _dir(dir), _proprio(Stimulus::NOTHING)
   {};
   // ************************************************************** Agent::str
   std::string str_dump() 
@@ -31,7 +31,7 @@ public:
   
     dump << "Agent : " << str_vec( pos() );
     dump << " [" << dir().str() << "]";
-    dump << " pro=" << _proprio;
+    dump << " pro=" << str_enum(_proprio);
   
   return dump.str();
   }
@@ -39,26 +39,26 @@ public:
   void turn_left()
   {
     _dir = rotate_left(_dir);
-    _proprio = MOVED;
+    _proprio = Stimulus::MOVED;
   }
   void turn_right()
   {
     _dir = rotate_right(_dir);
-    _proprio = MOVED;
+    _proprio = Stimulus::MOVED;
   }
   void advance()
   {
     _pos += dir().vec();
-    _proprio = MOVED;
+    _proprio = Stimulus::MOVED;
   }
   void eat()
   {
-    _proprio = FED;
+    _proprio = Stimulus::FED;
   }
   // *********************************************************** Agent::intent
   Vec2 intent_advance()
   {
-    _proprio = BUMPED; // par défaut
+    _proprio = Stimulus::BUMPED; // par défaut
     return pos() + dir().vec();
   }
   // ******************************************************* Agent::perception

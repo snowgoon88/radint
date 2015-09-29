@@ -16,6 +16,7 @@
  */
 
 #include <memory>                         // std::shared_ptr
+#include <global.hpp>
 #include <strenum.hpp>
 
 

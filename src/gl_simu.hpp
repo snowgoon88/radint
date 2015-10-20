@@ -203,7 +203,9 @@ private:
 	std::cerr << "WARN " << e.what() << std::endl;
       }
     }
-    
+    _simu.agent().memorize_interaction();
+    std::cout << _simu.agent().str_dump() << std::endl;
+    std::cout << _simu.agent().str_interactions() << std::endl;
   };
   /**
    * Callback pour gérer les messages d'erreur de GLFW

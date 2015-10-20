@@ -37,12 +37,12 @@ private:
 typedef std::shared_ptr<Primary> PrimaryPtr;
 
   static PrimaryPtr _advance = PrimaryPtr( new Primary{Act::FORWARD, Stimulus::MOVED, "ADV"});
-  // static PrimaryPtr _eat     {Act::FORWARD, Stimulus::FED, "EAT"};
-  // static PrimaryPtr _bump    {Act::FORWARD, Stimulus::BUMPED, "BUM"};
-  // static PrimaryPtr _left    {Act::LEFT30, Stimulus::MOVED, "L30"};
-  // static PrimaryPtre _right   {Act::RIGHT30, Stimulus::MOVED, "R30"};
+  static PrimaryPtr _eat = PrimaryPtr( new Primary{Act::FORWARD, Stimulus::FED, "EAT"});
+  static PrimaryPtr _bump = PrimaryPtr( new Primary{Act::FORWARD, Stimulus::BUMPED, "BUM"});
+  static PrimaryPtr _left = PrimaryPtr( new Primary{Act::LEFT30, Stimulus::MOVED, "L30"});
+  static PrimaryPtr _right = PrimaryPtr( new Primary{Act::RIGHT30, Stimulus::MOVED, "R30"});
 
-  // static std::array<Primary,5> _l_primary {_advance,_eat,_bump,_left,_right};
+  static std::array<PrimaryPtr,5> _l_primary {_advance,_eat,_bump,_left,_right};
 
   // static PrimaryPtr
   // static std::array<std::string,5> _l_st_primary {"ADV", "EAT", "BUM", "L30", "R30"};
